@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ This project was created by react and this project is mini game to name of Assembly Endgame
 
 ## Available Scripts
 
