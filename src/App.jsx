@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { languages } from "../src/language.js"
+import { clsx } from 'clsx'
 
 export default function App() {
 
@@ -13,16 +14,33 @@ export default function App() {
         )
     })
 
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    const alphabetElements = alphabet.split("").map((alph) => {
-        return <button key={alph}>{alph.toUpperCase()}</button>
-    })
-
-
+    const [guessedLetters, setGuessedLetters] = useState([])
     const [currentWord, setCurrentWord] = useState("react")
     const letterElements = currentWord.split("").map((letter, index) => {
         return <span className="letter" key={index}>{letter.toUpperCase()}</span>
     })
+
+    function addGuessedLetters(letter) {
+        setGuessedLetters(prevletter => prevletter.includes(letter) ? prevletter : [...prevletter, letter])
+    }
+
+
+
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    const alphabetElements = alphabet.split("").map((alph) => {
+        const isGuessed = guessedLetters.includes(alph)
+        const isCorrect = isGuessed && currentWord.includes(alph)
+        const isWrong = isGuessed && !currentWord.includes(alph)
+        const className = clsx({
+            correct: isCorrect,
+            wrong: isWrong
+        })
+        return <button className={className} key={alph} onClick={() => addGuessedLetters(alph)}>{alph.toUpperCase()}</button>
+    })
+
+
+
+
 
     return (
         <main>
