@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { languages } from "../src/language.js";
 import { clsx } from "clsx";
+import { getFarewellText } from "./utils.js";
 
 export default function App() {
   const [guessedLetters, setGuessedLetters] = useState([]);
@@ -65,6 +66,43 @@ export default function App() {
     );
   });
 
+  const gameStatusClass = clsx("game-status", {
+    won: isGameWon,
+    lost: isGameLost,
+    farewell: !isGameOver && isLastGuessIncorrect,
+  });
+
+  function gameStatusRender() {
+    if (!isGameOver && isLastGuessIncorrect) {
+      return (
+        <p className="farewell-message">
+          {getFarewellText(languages[wrongGuessedArray - 1].name)}
+        </p>
+      );
+    }
+    if (isGameWon) {
+      return (
+        <>
+          <h2>You win!</h2>
+          <p>Well done!</p>
+        </>
+      );
+    }
+    if (isGameLost) {
+      return (
+        <>
+          <h2>Game over!</h2>
+          <p>you first learn Assembly first</p>
+        </>
+      );
+    }
+    return null;
+  }
+
+  const lastGuessedLetter = guessedLetters[guessedLetters.length - 1];
+  const isLastGuessIncorrect =
+    lastGuessedLetter && !currentWord.includes(lastGuessedLetter);
+
   return (
     <main>
       <header>
@@ -74,10 +112,7 @@ export default function App() {
           from Assembly!
         </p>
       </header>
-      <section className="game-status">
-        <h2>You win!</h2>
-        <p>Well done!</p>
-      </section>
+      <section className={gameStatusClass}>{gameStatusRender()}</section>
       <section className="language-chips">{languageElement}</section>
       <section className="word">{letterElements}</section>
       <section className="keyboard">{alphabetElements}</section>
