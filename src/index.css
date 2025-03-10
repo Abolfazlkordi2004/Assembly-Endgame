@@ -6,7 +6,7 @@ body {
   margin: 0;
   font-family: "Hanken Grotesk", Arial, sans-serif;
   background-color: #262626;
-  color: #d9d9d9;
+  color: #D9D9D9;
   padding: 20px;
   height: 100vh;
 }
@@ -24,48 +24,53 @@ header {
 header > h1 {
   font-size: 1.25rem;
   font-weight: 500;
-  color: #f9f4da;
+  color: #F9F4DA;
 }
 
 header > p {
   font-size: 0.875rem;
   max-width: 350px;
-  color: #8e8e8e;
+  color: #8E8E8E;
 }
 
 section.game-status {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #f9f4da;
-  border-radius: 4px;
-  margin-block: 30px;
+  justify-content: center;
+  color: #F9F4DA;
   width: 100%;
   max-width: 350px;
+  min-height: 60px;
+  border-radius: 4px;
+  margin-block: 30px;
 }
 
 section.game-status.won {
-  background-color: #10a95b;
+  background-color: #10A95B;
 }
 
 section.game-status.lost {
-  background-color: #ba2a2a;
+  background-color: #BA2A2A;
+}
+
+section.game-status.farewell {
+  background-color: #7A5EA7;
+  border: 1px dashed #323232;
 }
 
 section.game-status > p {
   margin: 5px;
 }
 
-section.game-status > h2 {
-  font-size: 1.25rem;
-  margin: 5px;
-}
-
-section.game-status > p.farewell-message{
-  background-color: #7A5EA7;
-  border: 1px dashed #323232;
+section.game-status > p.farewell-message {
   font-style: italic;
   font-weight: 400;
+}
+
+section.game-status > h2 {
+  font-size: 1.25rem;
+  margin: 5px
 }
 
 section.language-chips {
@@ -80,8 +85,10 @@ section.language-chips {
 span.chip {
   border-radius: 3px;
   padding: 4.5px;
+  position: relative;
 }
 
+/* Dimmed overlay with skull on "lost" languages */
 span.chip.lost::before {
   content: "💀";
   position: absolute;
@@ -111,7 +118,11 @@ section.word > span {
   justify-content: center;
   align-items: center;
   font-size: 1.125rem;
-  border-bottom: 1px solid #f9f4da;
+  border-bottom: 1px solid #F9F4DA;
+}
+
+section.word > span.missed-letter {
+  color: #EC5D49;
 }
 
 section.keyboard {
@@ -126,15 +137,28 @@ section.keyboard {
 section.keyboard > button {
   height: 35px;
   width: 35px;
-  background-color: #fcba29;
-  border: 1px solid #d7d7d7;
+  background-color: #FCBA29;
+  border: 1px solid #D7D7D7;
   border-radius: 3px;
   cursor: pointer;
 }
 
+section.keyboard > button.correct {
+  background-color: #10A95B;
+}
+
+section.keyboard > button.wrong {
+  background-color: #EC5D49;
+}
+
+section.keyboard > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5
+}
+
 button.new-game {
-  background-color: #11b5e5;
-  border: 1px solid #d7d7d7;
+  background-color: #11B5E5;
+  border: 1px solid #D7D7D7;
   border-radius: 4px;
   width: 225px;
   height: 40px;
@@ -144,10 +168,14 @@ button.new-game {
   cursor: pointer;
 }
 
-section.keyboard > button.correct {
-  background-color: #10a95b;
-}
-
-section.keyboard > button.wrong {
-  background-color: red;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

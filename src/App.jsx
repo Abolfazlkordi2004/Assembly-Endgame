@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { languages } from "../src/language.js";
 import { clsx } from "clsx";
-import { getFarewellText } from "./utils.js";
+import { getFarewellText, getRandomWord } from "./utils.js";
 
 export default function App() {
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [currentWord, setCurrentWord] = useState("react");
 
+  const numGuessesleft = languages.length - 1;
   const wrongGuessedArray = guessedLetters.filter(
     (letter) => !currentWord.includes(letter)
   ).length;
@@ -14,8 +15,11 @@ export default function App() {
   const isGameWon = currentWord
     .split("")
     .every((letter) => guessedLetters.includes(letter));
-  const isGameLost = wrongGuessedArray >= languages.length - 1;
+  const isGameLost = wrongGuessedArray >= numGuessesleft;
   const isGameOver = isGameWon || isGameLost;
+  const lastGuessedLetter = guessedLetters[guessedLetters.length - 1];
+  const isLastGuessIncorrect =
+    lastGuessedLetter && !currentWord.includes(lastGuessedLetter);
 
   const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
@@ -25,9 +29,14 @@ export default function App() {
     );
   }
 
+  function startNewGame() {
+    setCurrentWord(getRandomWord());
+    setGuessedLetters([]);
+  }
+
   const languageElement = languages.map((lang, index) => {
-    const isWrongLanguage = index < wrongGuessedArray;
-    const className = clsx("chip", isWrongLanguage && "lost");
+    const isLanguageLost = index < wrongGuessedArray;
+    const className = clsx("chip", isLanguageLost && "lost");
     const styles = {
       backgroundColor: lang.backgroundColor,
       color: lang.color,
@@ -40,12 +49,16 @@ export default function App() {
   });
 
   const letterElements = currentWord.split("").map((letter, index) => {
+    const shouldRevealLetter = isGameLost || guessedLetters.includes(letter)
+    const letterClassName = clsx(
+        isGameLost && !guessedLetters.includes(letter) && "missed-letter"
+    )
     return (
-      <span className="letter" key={index}>
-        {guessedLetters.includes(letter) ? letter.toUpperCase() : ""}
-      </span>
-    );
-  });
+        <span key={index} className={letterClassName}>
+            {shouldRevealLetter ? letter.toUpperCase() : ""}
+        </span>
+    )
+})
 
   const alphabetElements = alphabet.split("").map((alph) => {
     const isGuessed = guessedLetters.includes(alph);
@@ -59,6 +72,9 @@ export default function App() {
       <button
         className={className}
         key={alph}
+        disabled={isGameOver}
+        aria-disabled={guessedLetters.includes(alph)}
+        aria-label={`Letter ${alph}`}
         onClick={() => addGuessedLetters(alph)}
       >
         {alph.toUpperCase()}
@@ -99,10 +115,6 @@ export default function App() {
     return null;
   }
 
-  const lastGuessedLetter = guessedLetters[guessedLetters.length - 1];
-  const isLastGuessIncorrect =
-    lastGuessedLetter && !currentWord.includes(lastGuessedLetter);
-
   return (
     <main>
       <header>
@@ -112,11 +124,30 @@ export default function App() {
           from Assembly!
         </p>
       </header>
-      <section className={gameStatusClass}>{gameStatusRender()}</section>
+      <section className={gameStatusClass} aria-live="polite" role="status">
+        {gameStatusRender()}
+      </section>
       <section className="language-chips">{languageElement}</section>
       <section className="word">{letterElements}</section>
+      <section className="sr-only" aria-live="polite" role="status">
+        <p>
+          {currentWord.includes(lastGuessedLetter)
+            ? `Correct! The letter ${lastGuessedLetter} is in the word`
+            : `Sorry,the letter ${lastGuessedLetter} is not in the word`}
+          you have {languages.length - 1} attempts left
+        </p>
+        <p>
+          Current word:
+          {currentWord
+            .split("")
+            .map((letter) =>
+              guessedLetters.includes(letter) ? letter + "." : "blank."
+            )
+            .join("")}
+        </p>
+      </section>
       <section className="keyboard">{alphabetElements}</section>
-      {isGameOver && <button className="new-game">New Game</button>}
+      {isGameOver && <button className="new-game" onClick={startNewGame}>New Game</button>}
     </main>
   );
 }
